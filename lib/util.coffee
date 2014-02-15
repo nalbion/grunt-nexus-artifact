@@ -80,12 +80,13 @@ module.exports = (grunt) ->
 
 		if isFile
 			file = fs.createReadStream(data)
-			file.pipe(request)
+			destination = file.pipe(request)
 
-			file.on 'end', ->
+			destination.on 'end', ->
 				grunt.log.writeln "Uploaded #{data.cyan}"
 				deferred.resolve()
 
+			destination.on 'error', (error) -> deferred.reject error
 			file.on 'error', (error) -> deferred.reject error
 			request.on 'error', (error) -> deferred.reject error
 		else
