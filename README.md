@@ -20,7 +20,7 @@ or add the following to your package.json file:
 ```js
 {
   "devDependencies": {
-    "grunt-nexus-artifact": "0.3.3"
+    "grunt-nexus-artifact": "0.3.4"
   }
 }
 ```
