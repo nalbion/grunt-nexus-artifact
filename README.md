@@ -153,7 +153,7 @@ nexus: {
   client: {
     files: [
       { src: ['builds/**/*'] }
-    ]
+    ],
     options: {
       curl: false,
       publish: [{
