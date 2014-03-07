@@ -49,7 +49,11 @@ module.exports = (grunt) ->
 					deferred.reject err
 					return
 
-				grunt.file.write "#{path}/.version", artifact.version
+				filePath = "#{path}/.downloadedArtifacts"
+				downloadedArtifacts = if grunt.file.exists(filePath) then grunt.file.readJSON(filePath) else {}
+				downloadedArtifacts[artifact.toString()] = new Date()
+				grunt.file.write filePath, JSON.stringify(downloadedArtifacts)
+
 				deferred.resolve()
 
 		deferred.promise
@@ -155,9 +159,12 @@ module.exports = (grunt) ->
 		download: (artifact, path) ->
 			deferred = Q.defer()
 
-			if grunt.file.exists("#{path}/.version") and (grunt.file.read("#{path}/.version").trim() is artifact.version)
-				grunt.log.writeln "Up-to-date: #{artifact}"
-				return
+			filePath = "#{path}/.downloadedArtifacts"
+			if grunt.file.exists(filePath)
+				downloadedArtifacts = grunt.file.readJSON(filePath)
+				if downloadedArtifacts[artifact.toString()]
+					grunt.log.writeln "Up-to-date: #{artifact}"
+					return
 
 			grunt.file.mkdir path
 
