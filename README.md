@@ -72,7 +72,6 @@ nexus: {
 }
 ```
 
-
 ### Options
 
 There are a number of options available.
@@ -190,6 +189,108 @@ Type `Boolean`
 Default `false`
 
 This parameter gives the option to use curl to upload - some people have issues with uploading using Node streams (not sure why)
+
+## Nexus verify task
+Run this task with the `grunt nexus:target:verify` command.
+This will pull down the last built artifact published to the nexus server.
+
+###Examples
+You can specify the version in the configuration. This is the preferred approach when the version is dynamic.
+```js
+nexus: {
+  client: {
+    url: 'http://nexus.google.com:8080',
+    repository: 'jslibraries',
+    verify: [
+      { 
+        id: 'com.google.js:jquery:tgz:',
+        version: '<%= buildVersion %>',
+        path: 'public/lib/jquery' 
+      }
+    ]
+  }
+}
+```
+
+You can also optionally append the version to the 'id' string.
+```js
+nexus: {
+  client: {
+    url: 'http://nexus.google.com:8080',
+    repository: 'jslibraries',
+    verify: [
+      { 
+        id: 'com.google.js:jquery:tgz:1.8.0',
+        path: 'public/lib/jquery' 
+      }
+    ]
+  }
+}
+```
+
+### Options
+
+#### url
+Type: `String`
+
+This defines the url of your nexus repository. This should be the base URL plus port. Ex: `http://your-nexus-repository:8080`
+
+#### repository
+Type: `String`
+
+This defines the name of the repository. _Since this task uses the REST API, the repository is not inferred_
+
+#### username
+Type: `String`
+
+This is an optional parameter that will be the nexus username - may not be needed for fetches
+
+#### password
+Type: `String`
+
+This is an optional parameter that will be the nexus password - may not be needed for fetches
+
+#### fetch
+Type: `Array{Object}`
+
+This defines an array of nexus artifacts to be retrieved from nexus. Each artifact has config options:
+
+##### group_id
+Type: `String`
+
+This defines the group_id of the artifact. Ex: `com.google.js`
+
+##### name
+Type: `String`
+
+This defines the name of the artifact. Ex: `jquery`
+
+##### ext
+Type: `String`
+
+Available extentions are `tgz`, `zip` and `jar`
+This defines the extension of the artifact. Ex: `tgz`
+
+##### version
+Type: `String`
+
+This defines the version of the artifact. Ex: `1.8.0`
+
+##### id
+Type: `String`
+
+This is a shorthand for `group_id`, `name`, `ext` and `version`. This defines the id string of the artifact in the following format:
+```{group_id}:{name}:{ext}:{version}```
+
+Ex:
+```
+com.google.js:jquery:tgz:1.8.0
+```
+
+##### path
+Type: `String`
+
+This defines the path where the artifact will be extracted to. Ex: `public/lib/jquery`
 
 # Release History
 * 2013-08-08  v0.2.0  Added support for publishing artifacts
