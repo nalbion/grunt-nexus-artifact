@@ -32,7 +32,7 @@ module.exports = (grunt) ->
 
         artifact = new NexusArtifact cfg
 
-        processes.push util.download(artifact, cfg.path)
+        processes.push util.download(artifact, cfg.path, cfg.expand)
 
     if @args.length and _.contains @args, 'publish'
       _.each options.publish, (cfg) =>

@@ -8,7 +8,7 @@ module.exports = (grunt) ->
 
   compress = require('grunt-contrib-compress/tasks/lib/compress')(grunt)
 
-  downloadFile = (artifact, path, temp_path) ->
+  downloadFile = (artifact, path, temp_path, expand) ->
     deferred = Q.defer()
 
     # http.get artifact.buildUrl(), (res) ->
@@ -30,7 +30,12 @@ module.exports = (grunt) ->
 
       spawnCmd = {}
 
-      if artifact.ext is 'tgz'
+      if expand is false
+        grunt.log.writeln 'Not expanding artifact.'
+        spawnCmd = 
+          cmd: 'echo'
+          args: 'Not expanding artifact.'
+      else if artifact.ext is 'tgz'
         spawnCmd =
           cmd: 'tar'
           args: "zxf #{temp_path} -C #{path}".split ' '
@@ -43,7 +48,7 @@ module.exports = (grunt) ->
         deferred.reject msg
 
       grunt.util.spawn spawnCmd, (err, stdout, stderr) ->
-        grunt.file.delete temp_path
+        grunt.file.delete temp_path if expand
 
         if err
           deferred.reject err
@@ -156,7 +161,7 @@ module.exports = (grunt) ->
   *
   * @return {Promise} returns a Q promise to be resolved when the file is done downloading
   ###
-  download: (artifact, path) ->
+  download: (artifact, path, expand = true) ->
     deferred = Q.defer()
 
     filePath = "#{path}/.downloadedArtifacts"
@@ -171,7 +176,7 @@ module.exports = (grunt) ->
     temp_path = "#{path}/#{artifact.buildArtifactUri()}"
     grunt.log.writeln "Downloading #{artifact.buildUrl()}"
 
-    downloadFile(artifact, path, temp_path).then( ->
+    downloadFile(artifact, path, temp_path, expand).then( ->
       deferred.resolve(temp_path)
     ).fail (error) ->
       deferred.reject error
