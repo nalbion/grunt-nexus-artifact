@@ -30,5 +30,14 @@ module.exports = (grunt) -> class NexusArtifact
     "#{@buildUrlPath()}#{@buildArtifactUri()}"
 
   buildArtifactUri: () ->
+    grunt.log.writeln "@versionPattern #{@versionPattern}"
+    expandedVersion = @expandVersion @version
     @versionPattern.replace /%([ave])/g, ($0, $1) =>
-      { a: @name, v: @version, e: @ext}[$1]
+      { a: @name, v: expandedVersion, e: @ext}[$1]
+
+  expandVersion: (version) ->
+    if version.indexOf('-SNAPSHOT') > 0
+      now = new Date()
+      timestamp = '-' + now.toISOString().replace(/[-:]|\..*/g,'').replace('T','.')
+      version = version.replace('-SNAPSHOT', timestamp)
+    version
