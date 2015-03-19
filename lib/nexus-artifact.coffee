@@ -1,3 +1,4 @@
+jf = require 'jsonfile'
 
 module.exports = (grunt) -> class NexusArtifact
 
@@ -37,7 +38,18 @@ module.exports = (grunt) -> class NexusArtifact
 
   expandVersion: (version) ->
     if version.indexOf('-SNAPSHOT') > 0
+      # Increment the build number
+      metaFile = '.maven-metadata.js'
+      if grunt.file.isFile metaFile
+        metaData = jf.readFileSync metaFile
+        build = (metaData[version] || 0) + 1
+      else
+        metaData = {}
+        build = 1
+      metaData[version] = build
+      jf.writeFileSync metaFile, metaData
+
       now = new Date()
       timestamp = '-' + now.toISOString().replace(/[-:]|\..*/g,'').replace('T','.')
-      version = version.replace('-SNAPSHOT', timestamp)
+      version = version.replace('-SNAPSHOT', timestamp + '-' + build)
     version

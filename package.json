@@ -20,8 +20,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "q": "0.9.3",
     "grunt": "~0.4.1",
-    "grunt-contrib-compress": "~0.5.2"
+    "grunt-contrib-compress": "~0.5.2",
+    "jsonfile": "^2.0.0",
+    "q": "0.9.3"
   }
 }
